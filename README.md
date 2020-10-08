@@ -14,4 +14,4 @@ To analyze how to change pitch/volume/tremor, we need a speech factorizer.
 2. Future experiments:\
   a. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
   b. https://www.isca-speech.org/archive/Interspeech_2019/pdfs/1778.pdf [accent-changer PPG approach] \
-  c. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] \
+  c. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] 
