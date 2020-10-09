@@ -6,15 +6,17 @@ import librosa
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'using {device} mode')
 model = Model()
-model.cpu()
 model.load_state_dict(
     torch.load(
         "gender_detector/checkpoint/best.pt", map_location={'cuda:0': 'cpu'}))
-model.cpu()
+if device == torch.device('cuda'):
+    model.cuda()
+else:
+    model.cpu()
 model.eval()
 
 
-def predict(wavfile, device=device):
+def predict(wavfile):
     _timit_dataloader = timit_dataloader(train_mode=False)
     waveform, _ = librosa.load(wavfile, sr=16000)
 

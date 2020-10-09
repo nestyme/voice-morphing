@@ -7,25 +7,34 @@ import torch as t
 
 
 class timit_dataloader:
-    def __init__(self, data_path='data/lisa/data/timit/raw/TIMIT', train_mode=True):
+    def __init__(self, data_path='./data/TIMIT', train_mode=True, age_mode=False):
+        self.doc_file_path = os.path.join(data_path, 'DOC', 'SPKRINFO.TXT')
+        self.corpus = tu.Corpus(data_path)
+        with open(self.doc_file_path) as f:
+            self.id_sex_dict = dict([(tmp.split(' ')[0], tmp.split(' ')[2]) for tmp in f.readlines()[39:]])
+        with open(self.doc_file_path) as f:
+            self.id_age_dict = dict(
+                [(tmp.split(' ')[0], 86 - int(tmp.split('  ')[5].split('/')[-1].replace('??', '50'))) \
+                 for tmp in f.readlines()[39:]])
+        # print(self.id_age_dict)
         if train_mode:
-            self.doc_file_path = os.path.join(data_path, 'DOC', 'SPKRINFO.TXT')
-            self.corpus = tu.Corpus(data_path)
-            with open(self.doc_file_path) as f:
-                self.id_sex_dict = dict([(tmp.split(' ')[0], tmp.split(' ')[2]) for tmp in f.readlines()[39:]])
-            self.trainset = self.create_dataset('train')
-            self.validset = self.create_dataset('valid')
-            self.testset = self.create_dataset('test')
-        else:
-            pass
+            self.trainset = self.create_dataset('train', age_mode=age_mode)
+            self.validset = self.create_dataset('valid', age_mode=age_mode)
+        self.testset = self.create_dataset('test', age_mode=age_mode)
 
     def return_sex(self, id):
         return self.id_sex_dict[id]
 
+    def return_age(self, id):
+        return self.id_age_dict[id]
+
     def return_data(self):
         return self.trainset, self.validset, self.testset
 
-    def create_dataset(self, mode):
+    def return_test(self):
+        return self.testset
+
+    def create_dataset(self, mode, age_mode=False):
         global people
         assert mode in ['train', 'valid', 'test']
         if mode == 'train':
@@ -35,10 +44,21 @@ class timit_dataloader:
         if mode == 'test':
             people = [self.corpus.test.person_by_index(i) for i in range(150)]
         spectrograms_and_targets = []
-        for person in tqdm(people):
-            target = self.return_sex(person.name)
-            for i in range(len(person.sentences)):
-                spectrograms_and_targets.append(self.preprocess_sample(person.sentence_by_index(i).raw_audio, target))
+        if age_mode:
+            for person in tqdm(people):
+                try:
+                    target = self.return_age(person.name)
+                    for i in range(len(person.sentences)):
+                        spectrograms_and_targets.append(
+                            self.preprocess_sample(person.sentence_by_index(i).raw_audio, target, age_mode=True))
+                except:
+                    print(person.name, target)
+        else:
+            for person in tqdm(people):
+                target = self.return_sex(person.name)
+                for i in range(len(person.sentences)):
+                    spectrograms_and_targets.append(
+                        self.preprocess_sample(person.sentence_by_index(i).raw_audio, target))
 
         X, y = map(np.stack, zip(*spectrograms_and_targets))
         X = X.transpose([0, 2, 1])  # to [batch, time, channels]
@@ -54,12 +74,25 @@ class timit_dataloader:
         spec_scaled = spec_scaled.astype(np.uint8)
         return spec_scaled
 
-    def preprocess_sample(self, amplitudes, gender, sr=16000, max_length=150):
+    @staticmethod
+    def clasterize_by_age(age):
+        if age < 25:
+            return 0
+        if 25 < age < 40:
+            return 0.5
+        if age > 40:
+            return 1
+
+    def preprocess_sample(self, amplitudes, target, age_mode=False, sr=16000, max_length=150):
         spectrogram = librosa.feature.melspectrogram(amplitudes, sr=sr, n_mels=128, fmin=1, fmax=8192)[:, :max_length]
         spectrogram = np.pad(spectrogram, [[0, 0], [0, max(0, max_length - spectrogram.shape[1])]], mode='constant')
-        target = 0 if gender == 'F' else 1
+        if age_mode:
+            # target = self.clasterize_by_age(target)
+            target = target/80
+        else:
+            target = 0 if target == 'F' else 1
         # print(np.array(self.spec_to_image(np.float32(spectrogram))).shape)
-        return self.spec_to_image(np.float32(spectrogram)), np.int64(target)
+        return self.spec_to_image(np.float32(spectrogram)), target
 
     def preprocess_sample_inference(self, amplitudes, sr=16000, max_length=150, device='cpu'):
         spectrogram = librosa.feature.melspectrogram(amplitudes, sr=sr, n_mels=128, fmin=1, fmax=8192)[:, :max_length]
