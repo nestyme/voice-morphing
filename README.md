@@ -8,10 +8,10 @@ According to https://www.researchgate.net/publication/269562531_The_Aging_Voice 
 | volume  | lower  | lower  |
 | tremor | higher  | higher  |
 
-1. Baseline
+1. **Baseline** \
 Train female/male voice classifier on TIMIT dataset and then manually change voice parametres, e.g. pitch/volume/tremor.
 To analyze how to change pitch/volume/tremor, we need a speech factorizer. Age regressor and Gender Detector can help to annotate large amounts of data for future training. As a baseline, firstly I trained `gender classifier` and `age regressor` to choose voice morphing strategies. I tuned hyperpams for pitch shifter (SFFT+Griphin-Lim, in future can be replaced with vocoder e.g. WaveGlow) taking into consideration predicted age from `age_regressor`. \
-2. Future experiments:\
+2. **Future experiments**\
   a. Replace Griphin-Lim with vocoder \
   b. Mine pseudolabeled data via trained detector and regressor on TIMIT (WSJ, LibriVox, Youtube) \
   b. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
