@@ -17,7 +17,7 @@ To analyze how to change pitch/volume/tremor, we need a speech factorizer. Age r
   c. Mine pseudolabeled data via trained detector and regressor on TIMIT (WSJ, LibriVox, Youtube) \
   d. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
   e. https://www.isca-speech.org/archive/Interspeech_2019/pdfs/1778.pdf [accent-changer PPG approach] \
-  f. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] \
+  f. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] 
 ## Current results
 First results can be found in **test** folder in this repo. It contains female voice (recorded from macbook Pro microphone) and male voice (recorded as Telegram audiomessage + applied noise reduction filter). Then morphed files passed through age_regressor pipeline trying to guess age of fake-aged speaker.\
 Live-demo is available in google-colaboratory `demo.ipynb`.
