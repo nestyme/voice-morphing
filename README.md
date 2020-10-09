@@ -1,5 +1,5 @@
-# voice-matureness
-voice matureness changer based on gender detector &amp; spectral features modification
+# voice-morphing
+voice morphing changer based on gender detector &amp; spectral features modification
 According to https://www.researchgate.net/publication/269562531_The_Aging_Voice, male and female voice changes with age in different ways.
 
 | Articulation feature (AF)  | Male | Female |
