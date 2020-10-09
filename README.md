@@ -10,7 +10,7 @@ According to https://www.researchgate.net/publication/269562531_The_Aging_Voice,
 
 1. Baseline
 Train female/male voice classifier on TIMIT dataset and then manually change voice parametres, e.g. pitch/volume/tremor.
-To analyze how to change pitch/volume/tremor, we need a speech factorizer.
+To analyze how to change pitch/volume/tremor, we need a speech factorizer. Age regressor and Gender Detector can help to annotate large amounts of data for future training.
 2. Future experiments:\
   a. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
   b. https://www.isca-speech.org/archive/Interspeech_2019/pdfs/1778.pdf [accent-changer PPG approach] \
