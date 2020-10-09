@@ -1,5 +1,5 @@
 # voice-morphing
-Voice morphing **currently** based on gender detector/age regressor &amp; spectral features modification [SFFT, Griphin-Lim argoritmn]\
+Voice morphing **currently** based on gender detector/age regressor &amp; spectral features modification [SFFT, Griphin-Lim argoritmn].\
 According to https://www.researchgate.net/publication/269562531_The_Aging_Voice (and amount of another medical research papers), male and female voice changes with age in different ways.
 
 | Articulation feature (AF)  | Male | Female |
