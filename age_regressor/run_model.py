@@ -1,5 +1,5 @@
 import torch
-from gender_detector.model import Model
+from age_regressor.model import Model
 import librosa
 import numpy as np
 import torch as tensor
