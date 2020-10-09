@@ -13,12 +13,14 @@ Train female/male voice classifier on TIMIT dataset and then manually change voi
 To analyze how to change pitch/volume/tremor, we need a speech factorizer. Age regressor and Gender Detector can help to annotate large amounts of data for future training. As a baseline, firstly I trained `gender classifier` and `age regressor` to choose voice morphing strategies. I tuned hyperpams for pitch shifter (SFFT+Griphin-Lim, in future can be replaced with vocoder e.g. WaveGlow) taking into consideration predicted age from `age_regressor`. 
 2. **Future experiments**\
   a. Replace Griphin-Lim with vocoder \
-  b. Mine pseudolabeled data via trained detector and regressor on TIMIT (WSJ, LibriVox, Youtube) \
-  b. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
-  c. https://www.isca-speech.org/archive/Interspeech_2019/pdfs/1778.pdf [accent-changer PPG approach] \
-  d. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] \
+  b. Create telegram-bot for testing \
+  c. Mine pseudolabeled data via trained detector and regressor on TIMIT (WSJ, LibriVox, Youtube) \
+  d. http://www.apsipa.org/proceedings/2019/pdfs/68.pdf [VAE with speaker individuality block]\
+  e. https://www.isca-speech.org/archive/Interspeech_2019/pdfs/1778.pdf [accent-changer PPG approach] \
+  f. https://github.com/SerialLain3170/VoiceConversion [Cycle-GAN] \
 ## Current results
-First results can be found in **test** folder in this repo. It contains female voice (recorded from macbook Pro microphone) and male voice (recorded as Telegram audiomessage + applied noise reduction filter). Then morphed files passed through age_regressor pipeline trying to guess age of fake-aged speaker.
+First results can be found in **test** folder in this repo. It contains female voice (recorded from macbook Pro microphone) and male voice (recorded as Telegram audiomessage + applied noise reduction filter). Then morphed files passed through age_regressor pipeline trying to guess age of fake-aged speaker.\
+Live-demo is available in google-colaboratory `demo.ipynb`.
 
 
 | Articulation feature (AF)  | Male | Female |
