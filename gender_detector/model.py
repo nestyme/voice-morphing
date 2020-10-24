@@ -23,6 +23,7 @@ class Model(nn.Module):
             x2 = torch.squeeze(x2, -1)  # [B, F, T]
             x2 = F.max_pool1d(x2, x2.size(2))  # [B, F, 1]
             xs.append(x2)
+
         x = torch.cat(xs, 2)  # [B, F, window]
 
         # FC

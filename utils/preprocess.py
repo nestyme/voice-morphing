@@ -6,20 +6,22 @@ from tqdm import tqdm
 import torch as t
 
 
-class timit_dataloader:
+class TimitDataset:
     def __init__(self, data_path='./data/TIMIT', train_mode=True, age_mode=False):
         self.doc_file_path = os.path.join(data_path, 'DOC', 'SPKRINFO.TXT')
         self.corpus = tu.Corpus(data_path)
+
         with open(self.doc_file_path) as f:
             self.id_sex_dict = dict([(tmp.split(' ')[0], tmp.split(' ')[2]) for tmp in f.readlines()[39:]])
         with open(self.doc_file_path) as f:
             self.id_age_dict = dict(
                 [(tmp.split(' ')[0], 86 - int(tmp.split('  ')[5].split('/')[-1].replace('??', '50'))) \
                  for tmp in f.readlines()[39:]])
-        # print(self.id_age_dict)
+
         if train_mode:
             self.trainset = self.create_dataset('train', age_mode=age_mode)
             self.validset = self.create_dataset('valid', age_mode=age_mode)
+
         self.testset = self.create_dataset('test', age_mode=age_mode)
 
     def return_sex(self, id):
@@ -28,7 +30,7 @@ class timit_dataloader:
     def return_age(self, id):
         return self.id_age_dict[id]
 
-    def return_data(self):
+    def return_datasets(self):
         return self.trainset, self.validset, self.testset
 
     def return_test(self):
@@ -43,11 +45,13 @@ class timit_dataloader:
             people = [self.corpus.train.person_by_index(i) for i in range(350, 400)]
         if mode == 'test':
             people = [self.corpus.test.person_by_index(i) for i in range(150)]
+
         spectrograms_and_targets = []
+
         if age_mode:
             for person in tqdm(people):
+                target = self.return_age(person.name)
                 try:
-                    target = self.return_age(person.name)
                     for i in range(len(person.sentences)):
                         spectrograms_and_targets.append(
                             self.preprocess_sample(person.sentence_by_index(i).raw_audio, target, age_mode=True))
@@ -88,7 +92,7 @@ class timit_dataloader:
         spectrogram = np.pad(spectrogram, [[0, 0], [0, max(0, max_length - spectrogram.shape[1])]], mode='constant')
         if age_mode:
             # target = self.clasterize_by_age(target)
-            target = target/80
+            target = target / 80
         else:
             target = 0 if target == 'F' else 1
         # print(np.array(self.spec_to_image(np.float32(spectrogram))).shape)
@@ -102,7 +106,7 @@ class timit_dataloader:
         return t.tensor(spectrogram, dtype=t.float).to(device, non_blocking=True)
 
 
-class dataloader:
+class TimitDataloader:
     def __init__(self, spectrograms, targets):
         self.data = list(zip(spectrograms, targets))
 

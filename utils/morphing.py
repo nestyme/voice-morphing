@@ -159,9 +159,9 @@ def make_older(filename, gender, sample_rate=16000, n_steps_female=-2, n_steps_m
     waveform, sample_rate = librosa.load(filename, sample_rate)
     print(gender)
     if gender == 'female':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=n_steps_female)
+        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=float(n_steps_female))
     if gender == 'male':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=n_steps_male)
+        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=float(n_steps_male))
     librosa.output.write_wav(f'new_{filename}', y_shifted, sample_rate)
     change_volume(f'new_{filename}', n=10)
     change_speed(f'new_{filename}', rate=0.9)

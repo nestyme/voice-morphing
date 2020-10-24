@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 import os
-from utils.preprocess import timit_dataloader, dataloader
+from utils.preprocess import TimitDataset, TimitDataloader
 from sklearn.metrics import accuracy_score
 from gender_detector.model import Model
 
@@ -33,10 +33,10 @@ if __name__ == '__main__':
         model.cpu()
     model.train()
 
-    _timit_dataloader = timit_dataloader(data_path='./data/TIMIT', age_mode=True)
-    train, valid, test = _timit_dataloader.return_data()
-    trainset = dataloader(*train)
-    validset = dataloader(*valid)
+    _timit_dataloader = TimitDataset(data_path='./data/TIMIT', age_mode=True)
+    train, valid, test = _timit_dataloader.return_datasets()
+    trainset = TimitDataloader(*train)
+    validset = TimitDataloader(*valid)
     BATCH_SIZE = 64
 
     optimizer = Adam(
