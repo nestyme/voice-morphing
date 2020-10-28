@@ -21,7 +21,8 @@ def change_pitch(filename, n_steps, sample_rate=16000):
 
 def change_volume(filename, n=10):
     """
-    :param n: n dB quieter
+    :param n: n dB louder
+    (instead of "quiter" -- proof https://stackoverflow.com/questions/43679631/python-how-to-change-audio-volume)
     """
     song = AudioSegment.from_wav(filename)
 
@@ -39,9 +40,14 @@ def overlap(filename_1, filename_2):
     combined.export(f'new_{filename}', format='wav')
 
 
-def change_speed(filename, rate=1.1):
-    tmp, sr = librosa.load(filename)
-    librosa.output.write_wav('filename', tmp, int(sr * 1.1))
+def change_speed(filename, rate):
+    # tmp, sr = librosa.load(filename)
+    # librosa.output.write_wav('filename', tmp, int(sr * rate))
+
+    sound = AudioSegment.from_file(filename)
+    sound = sound._spawn(sound.raw_data, overrides={"frame_rate": int(sound.frame_rate * rate)})
+
+    sound.export(filename, "wav")
 
 
 def change_noise_level():
@@ -155,25 +161,35 @@ def logMMSE(inputFilePath, outputFilePath):
     wavfile.write(outputFilePath, sample_rate, xfinal)
 
 
-def make_older(filename, gender, sample_rate=16000, n_steps_female=-2, n_steps_male=2):
-    waveform, sample_rate = librosa.load(filename, sample_rate)
-    print(gender)
-    if gender == 'female':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=float(n_steps_female))
-    if gender == 'male':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=float(n_steps_male))
-    librosa.output.write_wav(f'new_{filename}', y_shifted, sample_rate)
-    change_volume(f'new_{filename}', n=10)
-    change_speed(f'new_{filename}', rate=0.9)
+def get_params(age, gender='fem'):
+    if gender == 'fem':
+        if age == 10:
+            return {'n_steps': 3.5,
+                    'volume_rate': 5,
+                    'speed_rate': 1.05}
+        elif age == 16:
+            return {'n_steps': 1.5,
+                    'volume_rate': 5,
+                    'speed_rate': 1}
+        elif age == 30:
+            return {'n_steps': -1.5,
+                    'volume_rate': -5,
+                    'speed_rate': 0.95}
+    else:
+        if age == 30:
+            return {'n_steps': -0.8,
+                    'volume_rate': -5,
+                    'speed_rate': 0.95}
 
 
-def make_younger(filename, gender, sample_rate=16000, n_steps_female=1, n_steps_male=-1):
+def morph(filename, gender, age, sample_rate=16000, params=None):
     waveform, sample_rate = librosa.load(filename, sample_rate)
-    print(gender)
-    if gender == 'female':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=n_steps_female)
-    if gender == 'male':
-        y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=n_steps_male)
+
+    params = get_params(age, gender) if params is None else params
+
+    y_shifted = librosa.effects.pitch_shift(waveform, sample_rate, n_steps=float(params['n_steps']))
     librosa.output.write_wav(f'new_{filename}', y_shifted, sample_rate)
-    change_volume(f'new_{filename}', n=10)
-    change_speed(f'new_{filename}', rate=1.2)
+
+    change_volume(f'new_{filename}', n=params['volume_rate'])
+
+    change_speed(f'new_{filename}', rate=params['speed_rate'])
